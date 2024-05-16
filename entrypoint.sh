@@ -5,7 +5,7 @@ set -u  # script fails if trying to access to an undefined variable
 
 echo "[+] Action start"
 SOURCE_BEFORE_DIRECTORY="${1}"
-SOURCE_DIRECTORY="${2}"
+SOURCE_FILES="${2}"
 DESTINATION_GITHUB_USERNAME="${3}"
 DESTINATION_REPOSITORY_NAME="${4}"
 GITHUB_SERVER="${5}"
@@ -103,11 +103,8 @@ mv "$CLONE_DIR/.git" "$TEMP_DIR/.git"
 # $TARGET_DIRECTORY is '' by default
 ABSOLUTE_TARGET_DIRECTORY="$CLONE_DIR/$TARGET_DIRECTORY/"
 
-echo "[+] Deleting $ABSOLUTE_TARGET_DIRECTORY"
-rm -rf "$ABSOLUTE_TARGET_DIRECTORY"
-
-echo "[+] Creating (now empty) $ABSOLUTE_TARGET_DIRECTORY"
-mkdir -p "$ABSOLUTE_TARGET_DIRECTORY"
+echo "[+] Listing Target Directory $ABSOLUTE_TARGET_DIRECTORY"
+ls -al "$ABSOLUTE_TARGET_DIRECTORY"
 
 echo "[+] Listing Current Directory Location"
 ls -al
@@ -117,30 +114,12 @@ ls -al /
 
 mv "$TEMP_DIR/.git" "$CLONE_DIR/.git"
 
-echo "[+] List contents of $SOURCE_DIRECTORY"
-ls "$SOURCE_DIRECTORY"
+echo "[+] List contents of $SOURCE_FILES"
+ls "$SOURCE_FILES"
 
-echo "[+] Checking if local $SOURCE_DIRECTORY exist"
-if [ ! -d "$SOURCE_DIRECTORY" ]
-then
-	echo "ERROR: $SOURCE_DIRECTORY does not exist"
-	echo "This directory needs to exist when push-to-another-repository is executed"
-	echo
-	echo "In the example it is created by ./build.sh: https://github.com/cpina/push-to-another-repository-example/blob/main/.github/workflows/ci.yml#L19"
-	echo
-	echo "If you want to copy a directory that exist in the source repository"
-	echo "to the target repository: you need to clone the source repository"
-	echo "in a previous step in the same build section. For example using"
-	echo "actions/checkout@v2. See: https://github.com/cpina/push-to-another-repository-example/blob/main/.github/workflows/ci.yml#L16"
-	exit 1
-fi
-
-echo "[+] Copying contents of source repository folder $SOURCE_DIRECTORY to folder $TARGET_DIRECTORY in git repo $DESTINATION_REPOSITORY_NAME"
-cp -ra "$SOURCE_DIRECTORY"/. "$CLONE_DIR/$TARGET_DIRECTORY"
+echo "[+] Copying $SOURCE_FILES to folder $TARGET_DIRECTORY in git repo $DESTINATION_REPOSITORY_NAME"
+cp -rvf "$SOURCE_FILES" "$CLONE_DIR/$TARGET_DIRECTORY"
 cd "$CLONE_DIR"
-
-echo "[+] Files that will be pushed"
-ls -la
 
 ORIGIN_COMMIT="https://$GITHUB_SERVER/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
 COMMIT_MESSAGE="${COMMIT_MESSAGE/ORIGIN_COMMIT/$ORIGIN_COMMIT}"

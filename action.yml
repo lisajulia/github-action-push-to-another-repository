@@ -6,8 +6,8 @@ inputs:
   source-before-directory:
     description: Source before directory from the origin directory
     required: false
-  source-directory:
-    description: Source directory from the origin directory
+  source-files:
+    description: Source directory or files from the origin directory
     required: true
   destination-github-username:
     description: Name of the destination username/organization
@@ -60,7 +60,7 @@ runs:
   image: Dockerfile
   args:
     - '${{ inputs.source-before-directory }}'
-    - '${{ inputs.source-directory }}'
+    - '${{ inputs.source-files }}'
     - '${{ inputs.destination-github-username }}'
     - '${{ inputs.destination-repository-name }}'
     - '${{ inputs.github-server }}'
